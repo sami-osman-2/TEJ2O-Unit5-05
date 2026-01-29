@@ -8,57 +8,85 @@
  * 
 */
 
- local changes
-let strip = neopixel.create(DigitalPin.P0, 16, NeoPixelMode.RGB)
+let strip16 = neopixel.create(DigitalPin.P0, 16, NeoPixelMode.RGB)
+let strip4 = neopixel.create(DigitalPin.P16, 4, NeoPixelMode.RGB)
 let mode = 0
-strip.setBrightness(120)
 
-input.onButtonPressed(Button.A, () => mode = (mode + 1) % 4)
-input.onGesture(Gesture.Shake, () => {
-    for (let i = 0; i < strip.length(); i++)
-        strip.setPixelColor(i, neopixel.rgb(Math.randomRange(0, 255), Math.randomRange(0, 255), Math.randomRange(0, 255)))
-    strip.show(); basic.pause(200); strip.clear(); strip.show()
+strip16.setBrightness(120)
+
+// Button A changes mode for big strip
+input.onButtonPressed(Button.A, function () {
+    mode = (mode + 1) % 4
+
+    // Traffic light on 4-LED strip
+    strip4.clear()
+    strip4.setPixelColor(0, neopixel.colors(NeoPixelColors.Green))
+    strip4.show()
+    basic.pause(1000)
+
+    strip4.clear()
+    strip4.setPixelColor(1, neopixel.colors(NeoPixelColors.Yellow))
+    strip4.show()
+    basic.pause(1000)
+
+    strip4.clear()
+    strip4.setPixelColor(2, neopixel.colors(NeoPixelColors.Red))
+    strip4.show()
 })
 
-basic.forever(() => {
+// Shake = random colors on big strip
+input.onGesture(Gesture.Shake, function () {
+    for (let i = 0; i < strip16.length(); i++) {
+        strip16.setPixelColor(i, neopixel.rgb(
+            Math.randomRange(0, 255),
+            Math.randomRange(0, 255),
+            Math.randomRange(0, 255)
+        ))
+    }
+    strip16.show()
+    basic.pause(200)
+    strip16.clear()
+    strip16.show()
+})
+
+basic.forever(function () {
     if (mode == 0) {
-        for (let c of [NeoPixelColors.Red, NeoPixelColors.Green, NeoPixelColors.Blue])
-            for (let i = 0; i < strip.length(); i++) { strip.setPixelColor(i, neopixel.colors(c)); strip.show(); basic.pause(40) }
-        strip.clear(); strip.show()
+        for (let c of [NeoPixelColors.Red, NeoPixelColors.Green, NeoPixelColors.Blue]) {
+            for (let i = 0; i < strip16.length(); i++) {
+                strip16.setPixelColor(i, neopixel.colors(c))
+                strip16.show()
+                basic.pause(40)
+            }
+        }
+        strip16.clear()
+        strip16.show()
+
     } else if (mode == 1) {
-        for (let i = 0; i < strip.length(); i++) { strip.clear(); strip.setPixelColor(i, neopixel.colors(NeoPixelColors.Yellow)); strip.show(); basic.pause(60) }
+        for (let i = 0; i < strip16.length(); i++) {
+            strip16.clear()
+            strip16.setPixelColor(i, neopixel.colors(NeoPixelColors.Yellow))
+            strip16.show()
+            basic.pause(60)
+        }
+
     } else if (mode == 2) {
-        strip.showRainbow(1, 360); strip.rotate(1); strip.show(); basic.pause(80)
+        strip16.showRainbow(1, 360)
+        strip16.rotate(1)
+        strip16.show()
+        basic.pause(80)
+
     } else {
-        for (let b = 20; b < 255; b += 20) { strip.setBrightness(b); strip.showColor(neopixel.colors(NeoPixelColors.Blue)); strip.show(); basic.pause(20) }
-        for (let b = 255; b > 20; b -= 20) { strip.setBrightness(b); strip.showColor(neopixel.colors(NeoPixelColors.Blue)); strip.show(); basic.pause(20) }
+        for (let b = 20; b < 255; b += 20) {
+            strip16.setBrightness(b)
+            strip16.showColor(neopixel.colors(NeoPixelColors.Blue))
+            strip16.show()
+            basic.pause(20)
+        }
+        for (let b = 255; b > 20; b -= 20) {
+            strip16.setBrightness(b)
+            strip16.showColor(neopixel.colors(NeoPixelColors.Blue))
+            strip16.show()
+            basic.pause(20)
+        }
     }
 })
-
-=======
-// Create a strip of 4 LEDs on pin 16
-let strip = neopixel.create(DigitalPin.P16, 4, NeoPixelMode.RGB)
-
-input.onButtonPressed(Button.A, function () {
-
-    // green (LED 0)
-    strip.clear()
-    strip.setPixelColor(0, neopixel.colors(NeoPixelColors.Green))
-    strip.show()
-    basic.pause(1000)
-
-    // yellow (LED 1)
-    strip.clear()
-    strip.setPixelColor(1, neopixel.colors(NeoPixelColors.Yellow))
-    strip.show()
-    basic.pause(1000)
-
-    // red (LED 2)
-    strip.clear()
-    strip.setPixelColor(2, neopixel.colors(NeoPixelColors.Red))
-    strip.show()
-})
-
-
-
- remote changes (pulled from Github)
